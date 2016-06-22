@@ -15,13 +15,13 @@ Servo slideServo;
 
 
 //outputs
-int servoPin = 21;
+int servoPin = 9;
 
 
 //inputs
-int limitLeft = 12; //left limit switch
-int limitRight = 13; //right limit switch
-char direction = 1; // '1' is right and '-1' is left;
+int limitLeft = 10; //left limit switch
+int limitRight = 11; //right limit switch
+int direction = 1; // '1' is right and '-1' is left;
 
 
 //variables
@@ -37,8 +37,6 @@ void setup()   {
   slideServo.attach(servoPin);
   pinMode(limitLeft, INPUT);
   pinMode(limitRight, INPUT);
-
-
 
 
 }
