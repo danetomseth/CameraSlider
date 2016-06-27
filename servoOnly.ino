@@ -15,13 +15,13 @@ Servo slideServo;
 
 
 //outputs
-int servoPin = 9;
+int servoPin = 6;
 
 
 //inputs
-int limitLeft = 10; //left limit switch
-int limitRight = 11; //right limit switch
-int direction = 1; // '1' is right and '-1' is left;
+int limitLeft = 8; //left limit switch
+int limitRight = 7; //right limit switch
+int direction = 97;
 
 
 //variables
@@ -47,35 +47,39 @@ void loop() {
   //check if slide has reached end
   
 
-  if(left || right) {
-    
-  }
-
 
   int slideStatus = checkEndpoints();
-
+  
   if(slideStatus) {
     slideCamera();
   }
   else {
-    Serial.println('Pausing...');
+    
   }
   
 }
 
 
 int checkEndpoints() {
-  int left = digitalRead(limitLeft);
-  int right = digitalRead(limitRight);
+  int left = !digitalRead(limitLeft);
+  int right = !digitalRead(limitRight);
+  Serial.println(left);
+  Serial.println(right);
+  
 
-  if(left || right) {
-    Serial.println('End Reached');
-    direction = direction * -1;
-    return false;
+  
+  if(left) {
+    direction = 87;
+//    direction = 85;
+//    delay(1000);
   }
-  else {
-    return true;
+
+  if(right) {
+    direction = 96;
+//    direction = 100;
+//    delay(1000);
   }
+  return true;
 }
 
 
@@ -84,10 +88,18 @@ void takePicture() {
 
 }
 
-
+int count = 0;
 void slideCamera() {
-  int moveVal = 90 + (direction * 5);
+  int moveVal = direction;
   slideServo.write(moveVal);
+//  delay(100);
+//  slideServo.write(90); //sets speed back to zero
+//  delay(20);
+}
+
+
+void move(int dir) {
+  slideServo.write(dir);
   delay(100);
   slideServo.write(90); //sets speed back to zero
 }
