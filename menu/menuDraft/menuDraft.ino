@@ -37,6 +37,7 @@ const int VIDEO = 2;
 
 //Camera Settings
 int videoDuration = 30; //default to 30 seconds
+int pictureInterval = 2;
 
 
 //Motor Settings
@@ -58,6 +59,7 @@ const int ENAB = 20;
 int btnInput = A0;
 int limitLeft = 10; //motor-side limit
 int limitRight = 9; //pulley limit
+int shutter = 22;
 
 
 
@@ -92,25 +94,11 @@ void setup() {
   pinMode(limitRight, INPUT);
   pinMode(ENAA, OUTPUT);
   pinMode(ENAB, OUTPUT);
+  pinMode(shutter, OUTPUT);
 }
 
 void loop() {
-//  while(1) {
-//    digitalWrite(ENAA, LOW);
-//    digitalWrite(ENAB, LOW);
-//    lcd.clear();
-//    lcd.print("off");
-//   slideStepper.step(30);
-//   delay(5000);
-//   digitalWrite(ENAA, HIGH);
-//    digitalWrite(ENAB, HIGH);
-//   lcd.clear();
-//   lcd.print("on");
-//   slideStepper.step(30);
-//   delay(1000);
-//   
-//  }
-//  delay(1000);
+
   
   findHome();
   mainMenu();
@@ -200,7 +188,8 @@ void selectMode() {
 void selectSettings() {
   switch(selectedMode) {
     case TIMELAPSE:
-    timelapseSettings();
+    //timelapseSettings();
+    takeTimelapse();
     break;
     case VIDEO: 
     videoSettings();
@@ -372,21 +361,6 @@ void findHome() {
 }
 
 
-//void findHome() {
-// lcd.clear();
-// lcd.print("Finding Home");
-// Serial.println("waiting");
-// while(digitalRead(limitLeft) && digitalRead(limitRight)) {
-//   slideStepper.step(400);
-//   delay(2000);
-//   
-// }
-// 
-//}
-
-
-
-
 void takeVideo() {
   //17.7 rpm will take 1 min
   //0.295 rotations/sec
@@ -402,6 +376,35 @@ void takeVideo() {
   lcd.print("Finished");
   delay(5000);
 
+}
+
+
+void takeTimelapse() {
+  int count = 0;
+  while(digitalRead(limitLeft) && digitalRead(limitRight)) {
+    takePicture();
+    count++;
+    lcd.clear();
+    lcd.print("Count: ");
+    lcd.print(count);
+    delay(1000);
+    moveSlider();
+  }
+}
+
+
+void takePicture() {
+  digitalWrite(shutter, HIGH);
+  delay(200);
+  digitalWrite(shutter, LOW);
+}
+
+
+void moveSlider() {
+  enable();
+  slideStepper.step(10);
+  disable();
+  delay(500);
 }
 
 
