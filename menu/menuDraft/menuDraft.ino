@@ -13,6 +13,15 @@ const int SELKEY_ARV = 742;
 const int NOKEY_ARV = 1023;
 
 
+//when using v-in
+//const int UPKEY_ARV = 217; //that's read "analogue read value"
+//const int DOWNKEY_ARV = 492;
+//const int LEFTKEY_ARV = 753;
+//const int RIGHTKEY_ARV = 0;
+//const int SELKEY_ARV = 742;
+//const int NOKEY_ARV = 1023;
+
+
 const int UP_KEY = 1;
 const int DOWN_KEY = 2;
 const int RIGHT_KEY = 3;
@@ -39,7 +48,10 @@ int videoDuration = 30; //default to 30 seconds
 // **** rev/slider = 17.7 revolutions
 
 const int stepsPerRevolution = 200;
-Stepper slideStepper(stepsPerRevolution, 18, 17, 16, 15);
+//Stepper slideStepper(stepsPerRevolution, 18, 17, 16, 15);
+Stepper slideStepper(stepsPerRevolution, 15, 16, 17, 18);
+const int ENAA = 19;
+const int ENAB = 20;
 
 
 // Input buttons
@@ -68,7 +80,7 @@ LiquidCrystal lcd(6, 8, 7, 2, 3, 4, 5);
 void setup() {
   Serial.begin(9600);
 
-  slideStepper.setSpeed(25);
+  slideStepper.setSpeed(20);
 
 
   lcd.begin(16, 2);
@@ -78,9 +90,28 @@ void setup() {
 
   pinMode(limitLeft, INPUT);
   pinMode(limitRight, INPUT);
+  pinMode(ENAA, OUTPUT);
+  pinMode(ENAB, OUTPUT);
 }
 
 void loop() {
+//  while(1) {
+//    digitalWrite(ENAA, LOW);
+//    digitalWrite(ENAB, LOW);
+//    lcd.clear();
+//    lcd.print("off");
+//   slideStepper.step(30);
+//   delay(5000);
+//   digitalWrite(ENAA, HIGH);
+//    digitalWrite(ENAB, HIGH);
+//   lcd.clear();
+//   lcd.print("on");
+//   slideStepper.step(30);
+//   delay(1000);
+//   
+//  }
+//  delay(1000);
+  
   findHome();
   mainMenu();
 
@@ -289,6 +320,8 @@ void videoSettings() {
 int getKey() {
   prevInput = curInput;
   curInput = analogRead(btnInput);
+  Serial.print("input: ");
+  Serial.println(curInput);
   if (curInput == prevInput)
   {
    curKey = prevKey;
@@ -316,20 +349,22 @@ int getKey() {
 Slider
 *********************************************************************/
 void findHome() {
+ 
  lcd.clear();
  lcd.print("Finding Home");
  Serial.println("waiting");
+ enable();
  while(digitalRead(limitLeft) && digitalRead(limitRight)) {
-   slideStepper.step(-10);
-   delay(500);
+   slideStepper.step(-1);
  }
+
+ delay(1000);
  lcd.clear();
  lcd.print("Moving to Zero");
- delay(1000);
  while(!digitalRead(limitLeft) || !digitalRead(limitRight)) {
-   slideStepper.step(10);
-   delay(100);
+   slideStepper.step(100);
  }
+ disable();
  lcd.clear();
  lcd.print("Calibrated");
  Serial.println("Calibrated");
@@ -337,16 +372,18 @@ void findHome() {
 }
 
 
-
-// void findHome() {
-//   while(digitalRead(limitLeft) && digitalRead(limitRight)) {
-//     Serial.println("waiting...");
-//     delay(1000);
-//   }
-//   while(1) {
-//   Serial.println("Done");
-//   }
+//void findHome() {
+// lcd.clear();
+// lcd.print("Finding Home");
+// Serial.println("waiting");
+// while(digitalRead(limitLeft) && digitalRead(limitRight)) {
+//   slideStepper.step(400);
+//   delay(2000);
+//   
 // }
+// 
+//}
+
 
 
 
@@ -365,6 +402,18 @@ void takeVideo() {
   lcd.print("Finished");
   delay(5000);
 
+}
+
+
+void enable() {
+  digitalWrite(ENAA, HIGH);
+  digitalWrite(ENAB, HIGH);
+}
+
+
+void disable() {
+  digitalWrite(ENAA, LOW);
+  digitalWrite(ENAB, LOW);
 }
 
 
